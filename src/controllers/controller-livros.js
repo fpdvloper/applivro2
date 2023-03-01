@@ -1,60 +1,91 @@
-const { bdCliente } = require('../estrutura/bd')
-const Cliente = require('../models/Cliente')
+const Livro = require('../models/Livro')
 
-class ClienteController {
+const { bdLivro } = require('../estrutura/bd')
+
+class LivroController {
+
     static rotas(app) {
-        app.get('/clientes', ClienteController.listarCliente)
-        app.post('/clientes', ClienteController.cadastrarCliente)
-        app.get('/clientes/email/:email', ClienteController.buscarClienteEmail)
-        app.delete('/clientes/email/:email', ClienteController.deletarCliente)
+        app.get('/Livro', LivroController.listarLivro);
+        app.get('/Livro/:genero', LivroController.buscarLivroGenero);
+        app.post('/Livro', LivroController.cadastrarLivro)
+        app.put('/Livro/:genero', LivroController.atualizaLivro);
+        app.delete('/Livro/:genero', LivroController.deletarLivro);
     }
 
-    static listarCliente(req, res) {
-        res.send(bdCliente)
+    static listarLivro(req, res) {
+        res.send(bdLivro)
     }
 
-    static cadastrarCliente(req, res) {
-        const cliente = new Cliente(req.body.nome, req.body.email, req.body.tel, req.body.end)
-        bdCliente.push(cliente)
-        res.send(cliente)
-    }
 
-    static buscarClienteEmail(req, res) {
-        // Buscar o email na lista de clientes
-        const cliente = bdCliente.find(
-            (cliente) => cliente.email === req.params.email
+    static buscarLivroGenero(req, res) {
+
+        const livro = bdLivro.find(
+            (livro) => livro.genero === req.params.genero
         );
 
-        //se o cliente nao for encontrado devolva um erro
-        if (!cliente) {
-            res.send("Cliente não encontrado");
+
+        if (!livro) {
+            res.send("Livro não encontrado");
             return;
         }
 
-        //se o cliente for encontrado devolva o cliente
-        res.send(cliente);
+        res.send(livro);
     }
 
-    static deletarCliente(req, res) {
-        //busca o email na lista de clientes
-        const cliente = bdCliente.find((cliente) => cliente.email === req.params.email);
+    static cadastrarLivro(req, res) {
 
-        // se o cliente nao for encontrado devolva um erro 
-        if (!cliente) {
-            res.send("Cliente não encontrado");
+
+        const livro = new Livro(
+            req.body.nome,
+            req.body.autor, 
+            req.body.genero, 
+            req.body.lancamento, 
+            req.body.editora
+        );
+
+        bdLivro.push(livro);
+        res.send(bdLivro);
+    }
+
+
+
+    static atualizaLivro(req, res) {
+
+        const livro = bdLivro.find(livro => livro.genero ===
+            req.params.genero)
+
+        if (!livro) {
+            res.status(404).send('Livro não encontrado')
             return
         }
 
-        //se o cliente for encontrado delete o cliente 
-        const index = bdCliente.indexOf(cliente);
-        bdCliente.splice(index, 1);
+        livro.nome = req.body.nome
+        livro.autor = req.body.autor
+        livro.genero = req.body.genero
+        livro.lancamento = req.body.lancamento
+        livro.editora = req.body.editora
 
-        //devolva o cliente deletado
         res.send({
-            "mensagem: ": `o cliente de email ${cliente.email} foi deletado`,
+            "Mensagem": "Genero atualizado com Sucesso", "Novo livro ": livro
+        })
+    }
+
+    static deletarLivro(req, res) {
+
+        const livro = bdLivro.find((livro) => livro.genero === req.params.genero);
+        if (!livro) {
+            res.send("Livro não encontrado");
+            return
+        }
+
+        const index = bdLivro.indexOf(livro);
+        bdLivro.splice(index, 1);
+
+        res.send({
+            "mensagem: ": `o livro do genero ${livro.genero} foi deletado`,
         });
     }
 }
 
-module.exports = ClienteController;
+module.exports = LivroController;
 

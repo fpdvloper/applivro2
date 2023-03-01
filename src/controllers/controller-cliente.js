@@ -1,70 +1,85 @@
-const { response } = require("express")
+const Cliente = require("../models/Cliente");
+const Usuario = require("../models/Cliente");
+const { bdCliente } = require("../estrutura/bd");
 
-const Cliente = require('../models/Cliente')
-const Usuario = require('../models/Usuario')
+class ControllerCliente {
 
-const { bdCliente } = require('../estrutura/bd')
-
-class ClienteController {
   static rotas(app) {
-    //GET
-    app.get('/Cliente', ClienteController.listarCliente) // chama a rota GET
+    app.get("/cliente", ControllerCliente.listarCliente);
+    app.get("/cliente/:email", ControllerCliente.buscarClienteEmail);
+    app.post("/cliente", ControllerCliente.cadastrarCliente);
+    app.put('/cliente/:email', ControllerCliente.atualizaCliente);
+    app.delete("/cliente/:email", ControllerCliente.deletarCliente);
 
-    //POST 
-    app.post("/Cliente", ClienteController.cadastrarCliente) // chama a rota POST
-
-    //DELETE
-    app.delete("/cliente/:email", ClienteController.deletarCliente); // deleta pelo email
   }
 
-  //GET
   static listarCliente(req, res) {
-    res.send(bdCliente)
-  }    
-
-  //POST
-  static cadastrarCliente(req, res) {
-    const cliente = new Cliente(req.body.nome, req.body.email, req.body.tel, req.body.end)
-    bdCliente.push(cliente)
-    res.send(cliente) // responde a requisição
+    res.send(bdCliente);
   }
 
-  //GET
   static buscarClienteEmail(req, res) {
-    // Buscar o email na lista de clientes
+
     const cliente = bdCliente.find(
       (cliente) => cliente.email === req.params.email
     );
 
-    //se o cliente nao for encontrado devolva um erro
     if (!cliente) {
-      res.send("cliente não encontrado");
+      res.send("Cliente não encontrado");
       return;
     }
-    //se o cliente for encontrado devolva o cliente
+
     res.send(cliente);
   }
 
-  //DELETE
-  static deletarCliente(req, res) {
-    //busca o email na lista de clientes
-    const cliente = bdCliente.find((cliente) => cliente.email === req.params.email);
+  static cadastrarCliente(req, res) {
 
-    // se o cliente nao for encontrado devolva um erro 
+
+    const cliente = new Cliente(
+      req.body.nome,
+      req.body.email,
+      req.body.tel,
+      req.body.end
+    );
+    bdCliente.push(cliente);
+    res.send(bdCliente);
+  }
+
+  static atualizaCliente(req, res) {
+
+    const cliente = bdCliente.find(cliente => cliente.email ===
+      req.params.email)
+
     if (!cliente) {
-      res.send("cliente nao encontrado");
-      return;
+      res.send('Usuário não encontrado')
+      return
     }
 
-    //se o cliente for encontrado delete o cliente 
+    cliente.nome = req.body.nome
+    cliente.email = req.body.email
+    cliente.senha = req.body.senha
+    res.send({
+      "Mensagem": "Cliente atualizado com sudesso", "Dados do Cliente": cliente
+    })
+  }
+
+  static deletarCliente(req, res) {
+
+    const cliente = bdCliente.find((cliente) => cliente.email ===
+      req.params.email
+    );
+
+    if (!cliente) {
+      res.send("Cliente não encontrado");
+      return
+    }
+
     const index = bdCliente.indexOf(cliente);
     bdCliente.splice(index, 1);
 
-    //devolva o cliente deletado
     res.send({
-      "mensagem": `o cliente de email ${cliente.email} foi deletado`
+      "Mensagem: ": `O cliente do email ${cliente.email} foi deletado`,
     });
   }
-}
 
-module.exports = ClienteController
+}
+module.exports = ControllerCliente;

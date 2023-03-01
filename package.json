@@ -1,12 +1,12 @@
 {
-  "name": "app-livro-modulo5-exercicio",
+  "name": "app-livro",
   "version": "1.0.0",
+  "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "nodemon src/index.js",
+    "start": "nodemon ./src/index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
-}
-,
+  },
   "keywords": [],
   "author": "",
   "license": "ISC",
@@ -15,6 +15,5 @@
   },
   "devDependencies": {
     "nodemon": "^2.0.20"
-  },
-  "description": ""
+  }
 }
