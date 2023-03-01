@@ -31,12 +31,6 @@ Atributos: Nome, autor e gênero do livro.<br>
 <h2>BACK-END</h2>
 
 
-<h2>REQUISITOS</h2>
-
-
-• NPM<br>
-
-
 <h2>COMANDOS PARA EXECUTAR O PROJETO</h2>
 
 • npm install<br>
